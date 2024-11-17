@@ -6,13 +6,14 @@ function randomDate(start: Date, end: Date) {
 }
 
 // Generate ticket and event data
-const customerTickets = [
+export const customerTickets = [
   {
     username: "sarah_dev",
     userId: "USR001",
     message:
       "The search results aren't showing relevant results for my team's projects. I've tried using specific keywords but still getting unrelated matches.",
     category: "Search Functionality",
+    timestamp: new Date(2024, 10, 15),
   },
   {
     username: "alex_startup",
@@ -20,6 +21,7 @@ const customerTickets = [
     message:
       "Having issues with the checkout process. My team wants to upgrade to premium, but we only have 3 people and it requires 5 seats minimum.",
     category: "Checkout Process",
+    timestamp: new Date(2024, 10, 16),
   },
   {
     username: "tech_lead_maria",
@@ -27,6 +29,7 @@ const customerTickets = [
     message:
       "The chat interface is great, but sometimes it takes too long to load previous conversations. Can this be optimized?",
     category: "Loading Times",
+    timestamp: new Date(2024, 10, 17),
   },
   {
     username: "david_pm",
@@ -34,6 +37,7 @@ const customerTickets = [
     message:
       "Love the new chat interface features! The response suggestions are incredibly helpful for our daily standups.",
     category: "Chat Interface",
+    timestamp: new Date(2024, 10, 18),
   },
   {
     username: "startup_sam",
@@ -41,6 +45,7 @@ const customerTickets = [
     message:
       "We're a small team of 2 and the minimum seat requirement is preventing us from accessing the premium features we need.",
     category: "Pricing",
+    timestamp: new Date(2024, 10, 19),
   },
   {
     username: "rachel_ux",
@@ -48,6 +53,7 @@ const customerTickets = [
     message:
       "Search is returning old archived projects even when I specifically filter for active ones. This is making it hard to find current work.",
     category: "Search Functionality",
+    timestamp: new Date(2024, 10, 20),
   },
   {
     username: "mike_engineer",
@@ -55,6 +61,7 @@ const customerTickets = [
     message:
       "The loading time for the analytics dashboard has improved significantly. Great work on the optimization!",
     category: "Loading Times",
+    timestamp: new Date(2024, 10, 21),
   },
   {
     username: "product_lisa",
@@ -62,6 +69,7 @@ const customerTickets = [
     message:
       "The checkout process is much smoother now. Really appreciate the clear pricing breakdown per feature.",
     category: "Checkout Process",
+    timestamp: new Date(2024, 10, 22),
   },
   {
     username: "james_startup",
@@ -69,6 +77,7 @@ const customerTickets = [
     message:
       "We're getting timeout errors when trying to search through our document repository. This is blocking our team's workflow.",
     category: "Search Functionality",
+    timestamp: new Date(2024, 10, 23),
   },
   {
     username: "emma_tech",
@@ -76,6 +85,7 @@ const customerTickets = [
     message:
       "The chat interface's new AI suggestions are spot on! Though sometimes they take a while to load.",
     category: "Chat Interface",
+    timestamp: new Date(2024, 10, 24),
   },
 ]
 
@@ -88,7 +98,7 @@ const subscriptionPlans = {
 }
 
 // Generate Mixpanel events for each user
-const mixpanelEvents = customerTickets.flatMap((ticket) => {
+export const mixpanelEvents = customerTickets.flatMap((ticket) => {
   const userPlan =
     Object.values(subscriptionPlans)[Math.floor(Math.random() * 4)]
   const accountCreationDate = randomDate(
