@@ -1,5 +1,6 @@
 import * as React from "react"
 import Link from "next/link"
+import { IoPulseSharp } from "react-icons/io5"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
@@ -14,7 +15,7 @@ export function MainNav({ items }: MainNavProps) {
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">
-        <Icons.logo className="h-6 w-6" />
+        <Logo />
         <span className="inline-block font-bold">{siteConfig.name}</span>
       </Link>
       {items?.length ? (
@@ -36,6 +37,14 @@ export function MainNav({ items }: MainNavProps) {
           )}
         </nav>
       ) : null}
+    </div>
+  )
+}
+
+export function Logo() {
+  return (
+    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white">
+      <IoPulseSharp className="w-5 h-5 text-black" />
     </div>
   )
 }
