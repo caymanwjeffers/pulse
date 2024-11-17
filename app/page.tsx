@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/card"
 
 export default function IndexPage() {
-  const [dashboardData, setDashboardData] =
-    useState<DashboardData>(initialDashboardData)
+  const [dashboardData] = useState<DashboardData>(initialDashboardData)
 
   return (
     <section className="container py-6 space-y-8">
