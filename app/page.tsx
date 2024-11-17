@@ -1,10 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowDown, ArrowUp, FileText, TrendingUp } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  FileText,
+  TrendingUp,
+} from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -71,38 +78,6 @@ export default function IndexPage() {
 
   return (
     <section className="container py-6 space-y-8">
-      {/* Key Insights First */}
-      <div className="space-y-6">
-        {dashboardData.insights.knowledge.map((doc, index) => (
-          <Card
-            key={index}
-            className={`border-l-4 ${
-              doc.importance === "high"
-                ? "border-l-destructive"
-                : "border-l-primary"
-            }`}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                {doc.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">{doc.summary}</p>
-              <div className="space-y-2">
-                {doc.recommendations.map((rec, i) => (
-                  <Alert key={i}>
-                    <AlertTitle>Recommendation {i + 1}</AlertTitle>
-                    <AlertDescription>{rec}</AlertDescription>
-                  </Alert>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
       {/* Sentiment Trends */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="bg-green-50">
@@ -127,7 +102,7 @@ export default function IndexPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
               <TrendingUp className="text-red-600 rotate-180" />
-              Areas for Improvement
+              Trending Complaint
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -141,6 +116,51 @@ export default function IndexPage() {
           </CardContent>
         </Card>
       </div>
+      {/* Key Product Insights Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Key Product Insights</CardTitle>
+          <CardDescription>
+            Critical business findings and recommendations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {dashboardData.insights.knowledge.map((doc, index) => (
+            <Card
+              key={index}
+              className={`border-l-4 ${
+                doc.importance === "high"
+                  ? "border-l-destructive"
+                  : "border-l-primary"
+              }`}
+            >
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  {doc.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{doc.summary}</p>
+                <div className="space-y-2">
+                  {doc.recommendations.map((rec, i) => (
+                    <Alert key={i} variant="default">
+                      <AlertTitle>Recommendation {i + 1}</AlertTitle>
+                      <AlertDescription>{rec}</AlertDescription>
+                    </Alert>
+                  ))}
+                </div>
+                <div className="flex gap-2 mt-6">
+                  <Button variant="outline">View Details</Button>
+                  <Button>
+                    Take Action <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
 
       {/* Recurring Themes */}
       <Card>
