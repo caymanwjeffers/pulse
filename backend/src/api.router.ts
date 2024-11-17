@@ -1,29 +1,63 @@
-import { Router } from "express";
-import Anthropic from "@anthropic-ai/sdk";
+import "@anthropic-ai/sdk/shims/node";
+import { json, Request, Response, Router, text } from "express";
+import axios from "axios";
 import { customerTickets, mixpanelEvents } from "./data";
+import Anthropic from "@anthropic-ai/sdk";
+import nodeFetch from "node-fetch";
+import https from "https";
 
 const apiRouter = Router();
+apiRouter.use(json(), text());
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-});
+const MAX_TOKENS = 8192;
 
 async function callAnthropic(message: string) {
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY!,
+    maxRetries: 0,
+    fetch: (url, init) => {
+      console.log("Starting request to:", url);
+      return nodeFetch(url, {
+        ...init,
+        agent: new https.Agent({
+          keepAlive: true,
+          timeout: 60000,
+          family: 4,
+        }),
+      });
+    },
+  });
+
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-3-sonnet",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: message }],
-    });
-    return response;
+    const response = await anthropic.messages.create(
+      {
+        model: "claude-3-5-sonnet-20240620",
+        max_tokens: MAX_TOKENS,
+        messages: [{ role: "user", content: message }],
+      },
+      {
+        headers: {
+          "x-api-key": process.env.ANTHROPIC_API_KEY!,
+          "content-type": "application/json",
+        },
+      }
+    );
+    console.log("Anthropic response:", response.content);
+
+    return (response.content[0] as any).text;
   } catch (error) {
-    console.error("Anthropic API Error:", error);
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "Anthropic API Error:",
+        error.response?.data || error.message
+      );
+    }
     throw error;
   }
 }
 
 async function findRelevantData(query: string) {
-  const message = await callAnthropic(`Given this query: "${query}"
+  return await callAnthropic(`Given this query: "${query}"
   
   Analyze these data sources and return the IDs of the most relevant items:
   
@@ -31,19 +65,11 @@ async function findRelevantData(query: string) {
   ${JSON.stringify(customerTickets, null, 2)}
   
   Analytics Events:
-  ${JSON.stringify(mixpanelEvents, null, 2)}
-  
-  Return only a JSON object with two arrays: 'ticketIds' and 'eventIds' containing the relevant userIds.`);
-
-  // Parse the response to extract relevant data
-  const relevantData = JSON.parse((message.content[0] as any).text);
-  console.log(JSON.stringify(relevantData, null, 2));
-
-  return relevantData;
+  ${JSON.stringify(mixpanelEvents, null, 2)}`);
 }
 
 async function generateResponse(query: string, relevantData: any) {
-  const message = await callAnthropic(`Given this query: "${query}"
+  return await callAnthropic(`Given this query: "${query}"
   
   Analyze these data sources and return the answer with supporting evidence:
   ${JSON.stringify(relevantData, null, 2)}
@@ -54,14 +80,25 @@ async function generateResponse(query: string, relevantData: any) {
   Analytics Events:
   ${JSON.stringify(mixpanelEvents, null, 2)}
   
-  Return a JSON object with two fields: 'answer' and 'supportingEvidence'.`);
-
-  const answer = (message.content[0] as any).text;
-  return answer;
+  Return a concise answer without including any user information your response. 
+  This response should be simple and easy to understand and formatted to communicate to a non-technical product manager user.`);
 }
 
+type QueryRequest = Request<
+  {},
+  {},
+  {
+    query: string;
+  }
+>;
+
+type QueryResponse = Response<{
+  answer?: string;
+  error?: string;
+}>;
+
 // Replace the empty route with the query processing logic
-apiRouter.post("/analyze", async (req, res) => {
+apiRouter.post("/analyze", async (req: QueryRequest, res: QueryResponse) => {
   try {
     const { query } = req.body;
     const relevantData = await findRelevantData(query);
