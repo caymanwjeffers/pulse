@@ -22,11 +22,80 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+// Add new type for the API response
+type QueryResponse = {
+  answer: string
+  supportingEvidence: {
+    tickets?: any[]
+    events?: any[]
+    summary?: string
+  }
+}
+
 export default function IndexPage() {
   const [dashboardData] = useState<DashboardData>(initialDashboardData)
+  const [queryResult, setQueryResult] = useState<QueryResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const fetchInsights = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch("/api/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query:
+            "Which features do customers who are subscribed to payed plans use the most",
+        }),
+      })
+
+      const data = await response.json()
+      console.log({ data })
+      setQueryResult(data)
+    } catch (error) {
+      console.error("Error fetching insights:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <section className="container py-6 space-y-8">
+      {/* Add this new section at the top */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Paid User Feature Analysis</CardTitle>
+          <CardDescription>
+            Analysis of feature usage by paid subscribers
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={fetchInsights} disabled={isLoading}>
+            {isLoading ? "Analyzing..." : "Analyze Paid Features"}
+          </Button>
+
+          {queryResult && (
+            <div className="mt-4 space-y-4">
+              <Alert>
+                <AlertTitle>Analysis Results</AlertTitle>
+                <AlertDescription>{queryResult.answer}</AlertDescription>
+              </Alert>
+
+              {queryResult.supportingEvidence.summary && (
+                <Alert>
+                  <AlertTitle>Supporting Evidence</AlertTitle>
+                  <AlertDescription>
+                    {queryResult.supportingEvidence.summary}
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Sentiment Trends */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="bg-green-50">
