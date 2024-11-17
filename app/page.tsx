@@ -51,7 +51,7 @@ export default function IndexPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
               <TrendingUp className="text-red-600 rotate-180" />
-              Trending Complaint
+              Negative Feedback Trend
             </CardTitle>
           </CardHeader>
           <CardContent>

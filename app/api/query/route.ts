@@ -89,11 +89,6 @@ async function generateResponse(query: string, relevantData: any) {
 
   const answer = (message.content[0] as any).text
 
-  // Parse the response to extract supporting evidence
-  const supportingEvidence = JSON.parse(answer)
-
-  return {
-    answer,
-    supportingEvidence,
-  }
+  // just return the answer
+  return answer
 }
