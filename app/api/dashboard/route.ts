@@ -395,11 +395,6 @@ async function generateRecommendations(
       return response.recommendations
     } catch (error) {
       console.error("Failed to parse recommendations:", error)
-      return [
-        "Consider introducing a flexible 'small team' tier starting at 2 seats",
-        "Analyze potential revenue impact of lowering minimum seat requirement",
-        "Create targeted marketing campaigns for small team features",
-      ]
     }
   }
 

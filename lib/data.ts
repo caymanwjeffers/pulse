@@ -210,11 +210,11 @@ export const mixpanelEvents = customerTickets.flatMap((ticket) => {
   }
 
   // Add user attributes to each event
-  return events.map((event) => ({
+  return events.map((event, index) => ({
     userId: ticket.userId,
     ...event,
     userAttributes: {
-      teamSize: 2,
+      teamSize: index < 4 ? 3 : 25, // First 4 events get team size of 3, rest get 25
       subscriptionPlan: userPlan.name,
       planCost: userPlan.cost,
       accountCreationDate: accountCreationDate.toISOString(),
