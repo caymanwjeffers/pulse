@@ -63,39 +63,6 @@ export default function IndexPage() {
 
   return (
     <section className="container py-6 space-y-8">
-      {/* Add this new section at the top */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Paid User Feature Analysis</CardTitle>
-          <CardDescription>
-            Analysis of feature usage by paid subscribers
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={fetchInsights} disabled={isLoading}>
-            {isLoading ? "Analyzing..." : "Analyze Paid Features"}
-          </Button>
-
-          {queryResult && (
-            <div className="mt-4 space-y-4">
-              <Alert>
-                <AlertTitle>Analysis Results</AlertTitle>
-                <AlertDescription>{queryResult.answer}</AlertDescription>
-              </Alert>
-
-              {queryResult.supportingEvidence.summary && (
-                <Alert>
-                  <AlertTitle>Supporting Evidence</AlertTitle>
-                  <AlertDescription>
-                    {queryResult.supportingEvidence.summary}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Sentiment Trends */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="bg-green-50">
