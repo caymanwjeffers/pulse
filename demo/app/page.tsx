@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { initialDashboardData } from "@/constants/dashboard"
+import { motion } from "framer-motion"
 import {
   ArrowDown,
   ArrowRight,
@@ -62,7 +63,12 @@ export default function IndexPage() {
   }
 
   return (
-    <section className="container py-6 space-y-8">
+    <motion.section
+      initial={{ opacity: 0, y: "5vh" }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="container py-6 space-y-8"
+    >
       {/* Sentiment Trends */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="bg-green-50">
@@ -188,6 +194,6 @@ export default function IndexPage() {
           </div>
         </CardContent>
       </Card>
-    </section>
+    </motion.section>
   )
 }
