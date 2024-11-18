@@ -5,6 +5,7 @@ import { customerTickets, mixpanelEvents } from "./data";
 import Anthropic from "@anthropic-ai/sdk";
 import nodeFetch from "node-fetch";
 import https from "https";
+import { Client as NotionClient } from "@notionhq/client";
 
 const apiRouter = Router();
 apiRouter.use(json(), text());
@@ -59,7 +60,7 @@ async function callAnthropic(message: string) {
 async function findRelevantData(query: string) {
   return await callAnthropic(`Given this query: "${query}"
   
-  Analyze these data sources and return the IDs of the most relevant items:
+  Analyze these data sources and return the data from the most relevant items:
   
   Customer Tickets:
   ${JSON.stringify(customerTickets, null, 2)}
@@ -83,6 +84,47 @@ async function generateResponse(query: string, relevantData: any) {
   Return a concise answer without including any user information your response. 
   You are speaking to a non-technical product manager user, and your response should be short and simple while still including necessary information/insights.`);
 }
+
+const createNotionTask = async (data: any): Promise<string> => {
+  const message = await callAnthropic(
+    `Given this data: ${JSON.stringify(data)}
+    
+    Create a nicely formatted notion task with simple markdown. 
+    It should be formatted with acceptance criteria and have a specific ask and clear language a quick backstory on what the customer complaint or need is that supports the creation fo the ticket.
+    
+    Additionally, the task must be returned as ONLY JSON with a title (short and concise) and a description (longer and more detailed).
+
+    Return ONLY the JSON, nothing else.
+    `
+  );
+
+  const parsed = JSON.parse(message);
+  const { title, description } = parsed;
+
+  const notion = new NotionClient({
+    auth: process.env.NOTION_API_KEY,
+  });
+
+  const response = await notion.pages.create({
+    parent: { database_id: process.env.NOTION_DATABASE_ID! },
+    properties: {
+      Name: {
+        title: [{ text: { content: title } }],
+      },
+    },
+    children: [
+      {
+        object: "block",
+        type: "paragraph",
+        paragraph: {
+          rich_text: [{ type: "text", text: { content: description } }],
+        },
+      },
+    ],
+  });
+
+  return `https://notion.so/${response.id.replace(/-/g, "")}`;
+};
 
 type QueryRequest = Request<
   {},
@@ -110,5 +152,33 @@ apiRouter.post("/analyze", async (req: QueryRequest, res: QueryResponse) => {
     res.status(500).json({ error: "Failed to process query" });
   }
 });
+
+type AddTaskRequest = Request<
+  {},
+  {},
+  {
+    data: any;
+  }
+>;
+
+type AddTaskResponse = Response<{
+  link?: string;
+  error?: string;
+}>;
+
+// Add a task to the Notion database
+apiRouter.post(
+  "/addTask",
+  async (req: AddTaskRequest, res: AddTaskResponse) => {
+    const { data } = req.body;
+    try {
+      const link = await createNotionTask(data);
+      res.json({ link });
+    } catch (error) {
+      console.error("Error creating task:", error);
+      res.status(500).json({ error: "Failed to create task" });
+    }
+  }
+);
 
 export default apiRouter;
