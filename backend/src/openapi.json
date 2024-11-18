@@ -79,7 +79,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "Any JSON data structure to create a task from"
+                  }
+                }
               }
             }
           }

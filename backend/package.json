@@ -7,7 +7,8 @@
     "start": "node dist/app.js",
     "dev": "npm run build && node dist/app.js",
     "build": "tsc -p .",
-    "deploy": "npm run build && flyctl deploy --config ./fly.toml --remote-only"
+    "deploy": "npm run build && flyctl deploy --config ./fly.toml --remote-only",
+    "deploy-secrets": "fly secrets import < .env --app pulse-ai"
   },
   "keywords": [],
   "author": "",

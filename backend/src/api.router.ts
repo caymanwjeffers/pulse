@@ -123,7 +123,7 @@ const createNotionTask = async (data: any): Promise<string> => {
     ],
   });
 
-  return `https://notion.so/${response.id.replace(/-/g, "")}`;
+  return `notion.so/${response.id.replace(/-/g, "")}`;
 };
 
 type QueryRequest = Request<
