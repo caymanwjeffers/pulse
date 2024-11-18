@@ -1,13 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   async headers() {
     return [
       {
-        source: "/chart",
+        source: "/:path*",
         headers: [
           {
+            key: "Access-Control-Allow-Origin",
+            value: "*",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors *;",
+          },
+          {
             key: "X-Frame-Options",
-            value: "ALLOW-FROM *",
+            value: "ALLOWALL",
           },
         ],
       },
