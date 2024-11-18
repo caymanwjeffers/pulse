@@ -81,7 +81,7 @@ async function generateResponse(query: string, relevantData: any) {
   ${JSON.stringify(mixpanelEvents, null, 2)}
   
   Return a concise answer without including any user information your response. 
-  This response should be simple and easy to understand and formatted to communicate to a non-technical product manager user.`);
+  You are speaking to a non-technical product manager user, and your response should be short and simple while still including necessary information/insights.`);
 }
 
 type QueryRequest = Request<
